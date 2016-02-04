@@ -1,0 +1,47 @@
+ {
+  "activities": [
+    {
+      "newsfeed": {
+        "id": 1,
+        "actor": "sachgits",
+        "destination": "Jeniva",
+        "coordinates": "1254345,987634",
+        "imageUrl": "/path/to/folder/containing/images",
+        "time": "34503333",
+        "likes": [
+          1,
+          333,
+          1,
+          44,
+          55,
+          88,
+          33
+        ],
+        "comments": [
+          {
+            "from": 333,
+            "text": "ill would like one of this",
+            "time": 3450456
+          },
+          {
+            "from": 44,
+            "text": "watch and learn",
+            "time": 3450456
+          },
+          {
+            "from": 44,
+            "text": "this bike is dope",
+            "time": 3450456
+          },
+          {
+            "from": 44,
+            "text": "i really like this",
+            "time": 340490
+          }
+        ]
+      }
+    }
+  ]
+}
+
+module.export = sachgits;
