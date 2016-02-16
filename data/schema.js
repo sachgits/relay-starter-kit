@@ -21,6 +21,10 @@ import {
     getUserTimecreated,
     getUserUsername
 } from './sample_data';
+import * as items from './item_data'
+import * as destination from './destination_data-compiled'
+import * as feeds from './feeds_data-compiled'
+
 import {
     GraphQLBoolean,
     GraphQLFloat,
@@ -55,8 +59,10 @@ var userType = new GraphQLObjectType({
     name: 'User',
     description: 'A person who uses our app',
     fields: () => ({
-        id: {description: "id of the user",type: GraphQLInt,
-            resolve:()=> getUserId()
+        id: {
+            description: "id of the user",
+            type: GraphQLInt,
+            resolve:()=> globalIdField('User')
         },
         dateOfBirth: {
             type: GraphQLString,
@@ -72,6 +78,11 @@ var userType = new GraphQLObjectType({
             type: GraphQLString,
             description: 'user email which might be used for sign in',
             resolve:()=> getUserEmail()
+        },
+        password: {
+            type: GraphQLString,
+            description: 'user hashed version password',
+            resolve:() => getUserPassword()
         },
         timeCreated: {
             type: GraphQLString,
@@ -104,6 +115,164 @@ var userType = new GraphQLObjectType({
         }
     })
 });
+var sessionType = new GraphQLObjectType({
+    name: 'session',
+    description: 'user session info',
+    fields: () => ({
+        sessionId: {
+            type: GraphQLString,
+            description: 'session identifaction string',
+            resolve: ()=> '#lexi0Guxy@'
+        }
+    })
+})
+
+var addressType = new GraphQLObjectType({
+    name: 'address',
+    description: 'User Address',
+    fields: () => ({
+        phoneNumber: {
+            type: GraphQLString,
+            description: 'User Phone number',
+            resolve : ()=> '0721169392'
+        },
+        email: {
+            type: GraphQLString,
+            description: 'user email',
+            resolve : ()=> 'sachgits@gmail.com'
+        },
+        Zip :{
+            type: GraphQLString,
+            description: 'user zip code',
+            resolve : () => '00100'
+        }
+    })
+});
+
+var friendsType = new GraphQLObjectType({
+    name: 'friends',
+    description: 'User friends',
+    fields: () => ({
+        user_id: {
+            type: GraphQLInt,
+            description: 'user id of users friends'
+        },
+        time_of_friendship: {
+            type: GraphQLString,
+            description: 'date time users became friends'
+        },
+        status :{
+            type: GraphQLString,
+            description: 'status of friendship'
+        }
+    })
+});
+
+var DestinationType = new GraphQLObjectType({
+    name: 'Destination',
+    description: 'User destination',
+    fields: () => ({
+        coordinates: {
+            type: GraphQLFloat,
+            description: 'global co-ordinates of the user',
+            resolve:()=> destination.getDestCoordinates()
+        },
+        datetime_created: {
+            type: GraphQLString,
+            description: 'date time when the destination was created',
+            resolve:()=> destination.getDestDatetimecreated()
+        },
+        status :{
+            type: GraphQLInt,
+            description: 'one of three options between visiting visited or passed',
+            resolve:()=> destination.getDestStatus()
+        }
+    })
+});
+
+var feedsType = new GraphQLObjectType({
+    name: 'Feeds',
+    description: 'timeline feeds from users',
+    fields: ()=> ({
+        feed_id: {
+            type: GraphQLInt,
+            description: 'unique id of the user',
+            resolve: ()=> feeds.getFeedId()
+        },
+        actor: {
+            type: userType,
+            description: 'user who posted  the feed',
+            resolve: ()=> feeds.getFeedUser()
+        },
+        item: {
+            type: ItemType,
+            description: 'item that was posted',
+            resolve: ()=> feeds.getFeedItem()
+        },
+        destination: {
+            type: DestinationType,
+            description: 'where the item is expected',
+            resolve: ()=> feeds.getFeedDestination()
+        },
+        comments: {
+            type: GraphQLString,
+            description: 'a list of comments made',
+            resolve: () => feeds.getFeedComments()
+        },
+        likes: {
+            type: GraphQLString,
+            description: 'likes fo the item',
+            resolve: () => feeds.getFeedLikes()
+        }
+
+})
+});
+
+
+var ItemType = new GraphQLObjectType({
+    name: 'item',
+    description: 'all types of itesms',
+    fields: () => ({
+        item_id: {
+            type: GraphQLInt,
+            description: 'item id',
+            resolve:()=> items.getItemId()
+        },
+        datetime_created: {
+            type: GraphQLString,
+            description: 'date time item was created',
+            resolve:()=> items.getItemDatetimecreated()
+        },
+        name: {
+            type: GraphQLString,
+            description: 'name of the item',
+            resolve:()=> items.getItemName()
+        },
+        category: {
+            type: GraphQLString,
+            description: 'which category does it belong to',
+            resolve: ()=> items.getItemCategory()
+        },
+        description: {
+            type: GraphQLString,
+            description: 'item description /like how it is looks like',
+            resolve: () => items.getItemDescription()
+        }, photo_album: {
+            type: GraphQLString,
+            description: 'folder containing item images',
+            resolve:() => items.getItemPhotoAlbum()
+        }, value: {
+            type: GraphQLFloat,
+            description: 'items street value',
+            resolve:() => items.getItemValue()
+        }, condition:{
+            type: GraphQLString,
+            description: 'items current condition',
+            resolve:()=> items.getItemCondition()
+        }
+    })
+});
+
 
 /**
  * This is the type that will be the root of our query,
@@ -118,6 +287,17 @@ var queryType = new GraphQLObjectType({
             type: userType,
             args: {id: {type: GraphQLString}},
             resolve: (_,args) => getUser()
+        },
+        item: {
+            type: ItemType,
+            args: {id: {type: GraphQLInt}},
+            resolve: (_,args) => items.getItem()
+        },
+        feed: {
+            type: feedsType,
+            args: {id: {type: GraphQLInt}},
+            resolve:(_,args) => feeds.getFeed()
+
         }
     })
 });
